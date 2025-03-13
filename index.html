@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NthJS Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f4f4f4;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+        }
+        .counter {
+            font-size: 24px;
+            margin: 10px 0;
+        }
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+        button:hover {
+            background: #ddd;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            padding: 8px;
+            background: #ddd;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+        .loading {
+            color: orange;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>NthJS Demo</h1>
+
+    <div class="container">
+
+        <!-- Counter -->
+        <h2>Counter</h2>
+        <div class="counter" id="count">0</div>
+        <button id="inc">Increment</button>
+        <button id="dec">Decrement</button>
+
+        <!-- Input Binding -->
+        <h2>Name Input</h2>
+        <input type="text" id="nameInput">
+        <p>Hello, <span id="nameDisplay"></span>!</p>
+
+        <!-- Computed Signal -->
+        <h2>Sum of Two Numbers</h2>
+        <input type="number" id="num1" value="0"> +
+        <input type="number" id="num2" value="0">
+        <p>Sum: <span id="sum"></span></p>
+
+        <!-- List Rendering -->
+        <h2>Dynamic List</h2>
+        <button id="addItem">Add Item</button>
+        <ul id="list"></ul>
+
+        <!-- Group Binding -->
+        <h2>Favorite Color</h2>
+        <label><input type="radio" name="color" value="red"> Red</label>
+        <label><input type="radio" name="color" value="blue"> Blue</label>
+        <label><input type="radio" name="color" value="green"> Green</label>
+        <p>Selected Color: <span id="selectedColor"></span></p>
+
+        <h2>Hobbies</h2>
+        <label><input type="checkbox" value="Reading"> Reading</label>
+        <label><input type="checkbox" value="Gaming"> Gaming</label>
+        <label><input type="checkbox" value="Cooking"> Cooking</label>
+        <p>Selected Hobbies: <span id="hobbies"></span></p>
+
+        <!-- Async Signal -->
+        <h2>Fetch Data</h2>
+        <button id="fetchData">Load Data</button>
+        <p id="loading" class="loading" style="display: none;">Loading...</p>
+        <p id="error" class="error"></p>
+        <p id="dataDisplay"></p>
+
+    </div>
+
+    <script src="nthjs.js"></script>
+    <script>
+        // Counter
+        const count = createSignal(0);
+        createBinding(document.getElementById("count"), count);
+        document.getElementById("inc").addEventListener("click", () => count.value++);
+        document.getElementById("dec").addEventListener("click", () => count.value--);
+
+        // Name Input
+        const name = createSignal("User");
+        createBinding(document.getElementById("nameInput"), name, "value");
+        createBinding(document.getElementById("nameDisplay"), name);
+
+        // Computed Sum
+        const num1 = createSignal(0);
+        const num2 = createSignal(0);
+        const sum = createComputed(() => parseInt(num1.value) + parseInt(num2.value));
+        createBinding(document.getElementById("sum"), sum);
+
+        document.getElementById("num1").addEventListener("input", e => num1.value = e.target.value);
+        document.getElementById("num2").addEventListener("input", e => num2.value = e.target.value);
+
+        // Dynamic List
+        const items = createSignal([]);
+        createListBinding(document.getElementById("list"), items, item => {
+            const li = document.createElement("li");
+            li.textContent = item.text;
+            return li;
+        });
+
+        document.getElementById("addItem").addEventListener("click", () => {
+            items.value = [...items.value, { key: Date.now(), text: "Item " + (items.value.length + 1) }];
+        });
+
+        // Group Binding (Radio)
+        const selectedColor = createSignal("red");
+        createGroupBinding(document.querySelectorAll("input[name=color]"), selectedColor);
+        createBinding(document.getElementById("selectedColor"), selectedColor);
+
+        // Group Binding (Checkbox)
+        const hobbies = createSignal([]);
+        createGroupBinding(document.querySelectorAll("input[type=checkbox]"), hobbies);
+        createBinding(document.getElementById("hobbies"), hobbies);
+
+        // Async Signal (Fixed)
+        const [dataSignal, fetchData, isLoading, errorSignal] = createAsyncSignal(null, async () => {
+            const res = await fetch('https://jsonplaceholder.typicode.com/todos/1');
+            if (!res.ok) throw new Error("Failed to fetch data!");
+            return res.json();
+        });
+
+        createEffect(() => {
+            document.getElementById("loading").style.display = isLoading.value ? "block" : "none";
+            document.getElementById("error").textContent = errorSignal.value || "";
+            document.getElementById("dataDisplay").textContent = dataSignal.value ? 
+                `To-Do: ${dataSignal.value.title}` : "";
+        });
+
+        document.getElementById("fetchData").addEventListener("click", fetchData);
+    </script>
+
+</body>
+</html>
