@@ -131,7 +131,7 @@ or download and use.
 
     </div>
 
-    <script src="nthjs.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/nabeelalihashmi/nthjs@main/nthjs.min.js"></script>
     <script>
         // Counter
         const count = createSignal(0);
