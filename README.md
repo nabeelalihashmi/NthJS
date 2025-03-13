@@ -1,4 +1,4 @@
-# NthJS - Minimal Reactive State Management
+# NthJS - Minimal JavaScript Reactivity Library
 
 NthJS is a lightweight, dependency-free javascript reactivity and reactive dom library. It provides fine-grained reactivity without a build step, making it an minimal alternative to frameworks like Vue or Svelte for smaller projects. It is great companion for PHP projects. It is ~1.4kb minified+gzipped.
 
@@ -16,7 +16,7 @@ I needed simple reactivity many time in frontend, but didn’t want the overhead
 Simply include the `nthjs.js` file in your project via cdn.
 
 ```
-<script src="https://cdn.jsdelivr.net/gh/nabeelalihashmi/nthjs@main/nthjs.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/nabeelalihashmi/nthjs@main/nthjs.min.js"></script>
 ```
 
 or download and use.
