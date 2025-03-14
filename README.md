@@ -1,6 +1,10 @@
-# NthJS - Minimal JavaScript Reactivity Library
+# NthJS - Minimal Modular JavaScript Reactivity Starter Kit Library
 
 NthJS is a lightweight, dependency-free javascript reactivity and reactive dom library. It provides fine-grained reactivity without a build step, making it an minimal alternative to frameworks like Vue or Svelte for smaller projects. It is great companion for PHP projects. It is ~1.4kb minified+gzipped.
+
+## Main Idea
+NthJS provides a minimal yet solid base to make your own reactive library according to your needs. Just edit `nthjs.js` file, This is <250 loc. Remove functions/features you don't want or add functions/features you want, such as automatic binding of data attributes etc. 
+
 
 ## Motivation for NthJS
 I needed simple reactivity many time in frontend, but didn’t want the overhead of a build step. Neither I wanted to use Vue or other those have many features I never needed. I wanted something lightweight, yet powerful - something that took inspiration from Vue and Svelte, including features like watchers and group bindings, without unnecessary bloat. That’s why nthJS is born. It’s minimal, modular, and designed to keep reactivity purely in JavaScript, avoiding extra markup in the DOM. While it focuses on a JS-first approach, it can be easily extended to support data-attribute-based bindings if needed.
