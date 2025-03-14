@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do App - NthJS</title>
+    <script src="nthjs.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; background: #f4f4f4; }
+        .container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); display: inline-block; }
+        input, button { padding: 10px; margin: 5px; font-size: 16px; }
+        ul { list-style: none; padding: 0; }
+        li { background: #ddd; margin: 5px; padding: 10px; border-radius: 5px; display: flex; align-items: center; justify-content: space-between; }
+        .completed { text-decoration: line-through; color: gray; }
+        .remove-btn { background: rgb(199, 170, 170); color: white; border: none; padding: 5px 10px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <h1>📝 NthJS To-Do App</h1>
+    <div class="container">
+        <input type="text" id="newTask" placeholder="Add a task...">
+        <button id="addTask">➕ Add</button>
+        <ul id="taskList"></ul>
+        <p>Total: <span id="totalTasks"></span> | Remaining: <span id="remainingTasks"></span></p>
+    </div>
+
+    <script>
+        // Load tasks from local storage
+        const savedTasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
+        // Create a reactive signal for tasks
+        const tasks = createSignal(savedTasks);
+
+        // Save tasks whenever they change
+        watch(tasks, newTasks => localStorage.setItem("tasks", JSON.stringify(newTasks)));
+
+        // Computed values for total and remaining tasks
+        const totalTasks = createComputed(() => tasks.value.length);
+        const remainingTasks = createComputed(() => tasks.value.filter(task => !task.completed).length);
+
+        // Bind computed values to the UI
+        createBinding(document.getElementById("totalTasks"), totalTasks);
+        createBinding(document.getElementById("remainingTasks"), remainingTasks);
+
+        // Add new task
+        document.getElementById("addTask").addEventListener("click", () => {
+            const input = document.getElementById("newTask");
+            if (!input.value.trim()) return;
+
+            tasks.value = [...tasks.value, { key: Date.now(), text: input.value.trim(), completed: false }];
+            input.value = ""; // Clear input
+        });
+
+        // Create list binding
+        createListBinding(document.getElementById("taskList"), tasks, task => {
+            const li = document.createElement("li");
+            li.textContent = task.text;
+            li.className = task.completed ? "completed" : "";
+
+            // Toggle completion on click
+            li.addEventListener("click", () => {
+                tasks.value = tasks.value.map(t => t.key === task.key ? { ...t, completed: !t.completed } : t);
+            });
+
+            // Remove button
+            const removeBtn = document.createElement("button");
+            removeBtn.textContent = "❌";
+            removeBtn.className = "remove-btn";
+            removeBtn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                tasks.value = tasks.value.filter(t => t.key !== task.key);
+            });
+
+            li.appendChild(removeBtn);
+            return li;
+        });
+
+    </script>
+</body>
+</html>

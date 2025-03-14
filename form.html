@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Step Form with NthJS</title>
+    <script src="nthjs.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        .container { max-width: 400px; margin: auto; background: #fff; padding: 20px; border-radius: 5px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }
+        .step { display: none; }
+        .active { display: block; }
+        input, button { margin: 10px 0; padding: 10px; width: 100%; }
+        .error { color: red; font-size: 12px; }
+    </style>
+</head>
+<body>
+
+    <h1>Multi-Step Form</h1>
+
+    <div class="container">
+        <!-- Step 1: Personal Info -->
+        <div class="step active" id="step1">
+            <h2>Step 1: Personal Info</h2>
+            <input type="text" id="name" placeholder="Enter your name">
+            <p class="error" id="nameError"></p>
+            <button onclick="nextStep()">Next</button>
+        </div>
+
+        <!-- Step 2: Contact Info -->
+        <div class="step" id="step2">
+            <h2>Step 2: Contact Info</h2>
+            <input type="email" id="email" placeholder="Enter your email">
+            <p class="error" id="emailError"></p>
+            <button onclick="prevStep()">Back</button>
+            <button onclick="nextStep()">Next</button>
+        </div>
+
+        <!-- Step 3: Confirmation -->
+        <div class="step" id="step3">
+            <h2>Step 3: Review & Submit</h2>
+            <p><strong>Name:</strong> <span id="reviewName"></span></p>
+            <p><strong>Email:</strong> <span id="reviewEmail"></span></p>
+            <button onclick="prevStep()">Back</button>
+            <button onclick="submitForm()">Submit</button>
+        </div>
+
+        <!-- Submission Message -->
+        <div class="step" id="step4">
+            <h2>🎉 Form Submitted Successfully!</h2>
+            <p>Thank you, <span id="finalName"></span>!</p>
+        </div>
+    </div>
+
+    <script>
+        const currentStep = createSignal(1);
+        const name = createSignal("");
+        const email = createSignal("");
+        const nameError = createSignal("");
+        const emailError = createSignal("");
+
+        function nextStep() {
+            if (currentStep.value === 1 && !name.value.trim()) {
+                nameError.value = "Name is required!";
+                return;
+            } 
+            if (currentStep.value === 2 && !email.value.includes("@")) {
+                emailError.value = "Valid email is required!";
+                return;
+            }
+
+            nameError.value = "";
+            emailError.value = "";
+            currentStep.value++;
+        }
+
+        function prevStep() {
+            currentStep.value--;
+        }
+
+        function submitForm() {
+            currentStep.value = 4;
+        }
+
+        // Bind steps
+        createEffect(() => {
+            document.querySelectorAll(".step").forEach((el, index) => {
+                el.classList.toggle("active", index + 1 === currentStep.value);
+            });
+        });
+
+        // Bind inputs
+        createBinding(document.getElementById("name"), name, "value");
+        createBinding(document.getElementById("email"), email, "value");
+
+        // Bind errors
+        createBinding(document.getElementById("nameError"), nameError);
+        createBinding(document.getElementById("emailError"), emailError);
+
+        // Bind review & final output
+        createBinding(document.getElementById("reviewName"), name);
+        createBinding(document.getElementById("reviewEmail"), email);
+        createBinding(document.getElementById("finalName"), name);
+    </script>
+
+</body>
+</html>
